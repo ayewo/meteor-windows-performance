@@ -1,6 +1,12 @@
 # timings.ps1.tpl
 Start-Transcript -Path "${timings_folder}\timings.log" -Append
 
+# Using this 3rd-party module for logging due to the transcript's limitation https://github.com/PowerShell/PowerShell/issues/10994
+# PowerShell's transcript is not as robust as the Unix "script" command https://www-users.cse.umn.edu/~gini/1901-07s/files/script.html
+Import-Module PowerShellLogging 
+$TranscriptFile = Enable-LogFile -Path "${timings_folder}\timings-full.log"
+$VerbosePreference = "Continue"
+
 # Post-reboot setup tasks
 Write-Output "Performing benchmark setup..."
 
@@ -18,7 +24,7 @@ if (-Not (Test-Path -Path $timings_folder)) {
 
 # If set, use the patched @ayewo/meteor package in the first command
 $patch_meteor = "${patch_meteor}"
-$first_command = "npm install -g meteor"
+$first_command = "npm install -g meteor@2.14"
 
 if ($patch_meteor -and $patch_meteor -eq 'true') {
     $first_command = "npm install -g @ayewo/meteor"
@@ -155,3 +161,4 @@ Add-Content -Path "$timings_folder\\timings.csv" -Value "5, '$command', $($time_
 Set-Location ..
 
 Stop-Transcript
+$TranscriptFile | Disable-LogFile
