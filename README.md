@@ -369,6 +369,39 @@ Get-MpPerformanceReport -Path D:\meteor-create.etl -TopScans 100 -MinDuration 10
 
 The full list of *process* and *folder* exclusions that were added are in the file `process-and-folder-exclusions.ps1` used in the benchmarks.
 
+### 2.4.3. Defender Exclusions
+A comprehensive list of process and folder exclusions were added to a convenience script: [`defender-exclusions.ps1`](defender-exclusions.ps1).
+
+When run using PowerShell, the convenience script will add a predefined list of process and folder exclusions to Windows Defender. The script can also exclude an individual folder from scans during development.
+
+1. When run without arguments, it will just add predefined exclusions:
+`.\defender-exclusions.ps1`
+
+2. To whitelist a specific folder, simply do:`.\defender-exclusions.ps1 Add C:\path\to\folder`.
+
+As an example, assuming the following folder layout:
+```bash
+cd C:\User\Administrator\projects
+meteor create testapp-two --blaze
+```
+Running `.\defender-exclusions.ps1 Add C:\User\Administrator\projects` will add that folder to the exclusions along with the predefined ones.
+
+In case you meet the following security error:
+```bash
+.\defender-exclusions.ps1 : File C:\Users\Administrator\defender-exclusions.ps1 cannot be loaded because running scripts is
+disabled on this system. For more information, see about_Execution_Policies at
+https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ .\defender-exclusions.ps1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess
+```
+
+You will need to preface execution of the script with this in your PowerShell session:
+```bash
+Set-ExecutionPolicy Bypass -Scope Process -Force;
+```
 
 
 # Chapter 3.0.
