@@ -440,12 +440,12 @@ The runtime on Windows for all 5 commands will be written to `timings.csv` in th
 
 # Chapter 4.0.
 ## 4.1. Further Considerations
-The root device on most EC2 instances today now use EBS. EBS is slower, relative to instance storage, so one possibility to speed up the benchmarks would be to install `meteor` to instance storage on EC2 instances that come with NVMe SSD drives. This would mean switching the instance type from `c5a.2xlarge` to `c5ad.2xlarge` (the extra "d" after "c5a" indicates an instance store is available) to take advantage of the faster NVMe SSDs.
+The root device on most EC2 instances today now use EBS. EBS is slower[^2][^3], relative to instance storage, so one possibility to speed up the benchmarks would be to install `meteor` to instance storage on EC2 instances that come with NVMe SSD drives. This would mean switching the instance type from `c5a.2xlarge` to `c5ad.2xlarge` (the extra "d" after "c5a" indicates an instance store is available) to take advantage of the faster NVMe SSDs.
 
 I found articles on how to install `meteor` outside of the default installation location i.e. outside of `$HOME/.meteor` on [Linux](https://github.com/meteor/meteor/issues/8489#issuecomment-286812145) and outside of `%LocalAppData%\.meteor` on [Windows](https://forums.meteor.com/t/cant-install-meteor-on-windows/51894).
 
 ## 4.2. Dev Drive
-The next step would be to [Set up a Dev Drive on Windows 11](https://learn.microsoft.com/en-us/windows/dev-drive/) to take advantage of the improved file system performance of the underlying ReFS that has been enhanced with [CopyOnWrite (CoW) linking](https://devblogs.microsoft.com/engineering-at-microsoft/dev-drive-and-copy-on-write-for-developer-performance/) which makes it better suited to developer workloads than NTFS[^2].
+Dev Drives which are based on the ReFS[^4] file system are better suited to developer workloads than NTFS[^5]. The next step would be to [Set up a Dev Drive on Windows 11](https://learn.microsoft.com/en-us/windows/dev-drive/) to take advantage of ReFS' significantly higher performance when [CopyOnWrite (CoW) linking](https://devblogs.microsoft.com/engineering-at-microsoft/dev-drive-and-copy-on-write-for-developer-performance/) is enabled **and** the Dev Drive was created on *a non-OS partition*[^6].
 
 
 
@@ -461,4 +461,12 @@ The next step would be to [Set up a Dev Drive on Windows 11](https://learn.micro
 
 [^1]: The sponsor of this issue did his testing on Debian 12 on WSL. This is why I choose this version of Ubuntu since it is [based on Debian 12](https://askubuntu.com/questions/445487/what-debian-version-are-the-different-ubuntu-versions-based-on). 
 
-[^2]: A [few](https://github.com/microsoft/Windows-Dev-Performance/issues/17#issuecomment-1643406687) folks reported significant improvement when they switched to a [Dev Drive](https://github.com/microsoft/Windows-Dev-Performance/issues/17#issuecomment-1567346040) in this thread: [nodejs and yarn are 4x slower on windows than ubuntu](https://github.com/microsoft/Windows-Dev-Performance/issues/17)
+[^2]: *Performance of instance store vs EBS-optimized EC2 or RAID volumes*: comparison of [EBS with instance store on `i3` and `i2` instances](https://stackoverflow.com/a/42846644).
+
+[^3]: *Performance of instance store vs EBS-optimized EC2 or RAID volumes*: has benchmarks [comparing EBS vs. instance store](https://stackoverflow.com/a/62736472).
+
+[^4]: A [few](https://github.com/microsoft/Windows-Dev-Performance/issues/17#issuecomment-1643406687) folks reported significant improvement when they switched to a [Dev Drive](https://github.com/microsoft/Windows-Dev-Performance/issues/17#issuecomment-1567346040) in this thread: [nodejs and yarn are 4x slower on windows than ubuntu](https://github.com/microsoft/Windows-Dev-Performance/issues/17)
+
+[^5]: This [detailed comment from 2018 by a Microsoft engineer](https://github.com/microsoft/WSL/issues/873#issuecomment-425272829) explains that file operations in Windows are often more expensive than in Linux making NTFS slower.
+
+[^6]: Windows intercepts every file system operation on a volume using filter drivers. Non-system drives will have generally have fewer filter drivers installed compared to the system drive `C:\` meaning non-OS partitions will [experience less overhead](https://github.com/microsoft/Windows-Dev-Performance/issues/87#issuecomment-1534958991) from Windows compared to the OS partition on `C:\`. 

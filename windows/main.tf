@@ -40,6 +40,7 @@ data "template_file" "windows-userdata" {
 # The transcript will be saved to C:\Users\Administrator\meteor-timings\timings.log
 # See also the output of C:\ProgramData\Amazon\EC2Launch\log\agent.log
 Start-Transcript -Path "C:\Users\${var.user_name}\UserData.log" -Append
+$VerbosePreference = "Continue"
 
 # From https://stackoverflow.com/a/45871712 
 netsh advfirewall firewall add rule name="WinRM in" protocol=TCP dir=in profile=any localport=5985 remoteip=any localip=any action=allow
@@ -51,7 +52,10 @@ $admin.psbase.invoke("SetPassword", "${var.user_password}")
 # Allow scripts to run without any restrictions or warnings
 Set-ExecutionPolicy Bypass -Scope Process -Force;
 
-
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Set-PSRepository PSGallery -InstallationPolicy Trusted
+Install-Module PowerShellLogging -Verbose -Repository PSGallery -Force
+Set-PSRepository PSGallery -InstallationPolicy Untrusted
 
 # 1.0. Setup Windows Defender
 $enable_defender = "${var.enable_defender}"
