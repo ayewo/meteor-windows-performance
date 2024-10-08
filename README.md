@@ -367,6 +367,12 @@ Get-MpPerformanceReport -Path D:\meteor-create.etl -TopProcesses 10 -TopExtensio
 Get-MpPerformanceReport -Path D:\meteor-create.etl -TopScans 100 -MinDuration 100ms
 ```
 
+The most useful set of options that produced an actionable report from the performance recording came from this [blog post](https://mortenknudsen.net/?p=415) which I adapted for my needs:
+```bash
+Get-MpPerformanceReport -Path D:\meteor-create.etl -TopFiles 20 -TopExtensions 20 -TopProcesses 20 -TopScans 20 -TopExtensionsPerProcess 20 -TopScansPerExtensionPerProcess 20 > meteor-create.txt
+```
+It allowed me to easily identify processes and folders that needed to be excluded. Note that the report can be quite long which is why I redirect the console output to a text file (using `> meteor-create.txt`) so it is easier to review in a text editor. 
+
 The full list of *process* and *folder* exclusions that were added are in the file `process-and-folder-exclusions.ps1` used in the benchmarks.
 
 ### 2.4.3. Defender Exclusions
