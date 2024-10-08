@@ -24,7 +24,7 @@ Add-MpPreference -ExclusionPath "C:\ProgramData\chocolatey\bin\ptime.exe"
 Add-MpPreference -ExclusionPath "C:\ProgramData\chocolatey\lib\ptime\tools\ptime.exe"
 
 # Process exclusion list
-# Defender won't scan files OPENED by any excluded process in this list, no matter where the files are located (i.e. on-device or removable disks). 
+# Defender won't scan files OPENED by any excluded process in this list, no matter where the files are located (i.e. local, network or removable volumes). 
 # Two types of process exclusions are used: by image name and by full path.
 # See https://learn.microsoft.com/en-us/defender-endpoint/configure-process-opened-file-exclusions-microsoft-defender-antivirus
 
